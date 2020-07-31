@@ -2,3 +2,5 @@ models/
 cmd/
 restapi/
 bookstore-books-server
+
+!restapi/configure_bookstore_books.go
