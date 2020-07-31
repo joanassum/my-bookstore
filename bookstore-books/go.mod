@@ -12,4 +12,5 @@ require (
 	github.com/go-openapi/validate v0.19.10
 	github.com/jessevdk/go-flags v1.4.0
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )

@@ -4,14 +4,18 @@ package restapi
 
 import (
 	"crypto/tls"
+	"log"
 	"net/http"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
-	"github.com/go-openapi/runtime/middleware"
+	"gopkg.in/mgo.v2"
 
+	"github.com/joanassum/my-bookstore/bookstore-books/adapters"
+	"github.com/joanassum/my-bookstore/bookstore-books/repository/mongodb"
 	"github.com/joanassum/my-bookstore/bookstore-books/restapi/operations"
 	"github.com/joanassum/my-bookstore/bookstore-books/restapi/operations/books"
+	"github.com/joanassum/my-bookstore/bookstore-books/usecases"
 )
 
 //go:generate swagger generate server --target ../../bookstore-books --name BookstoreBooks --spec ../swagger.yml --principal interface{}
@@ -38,9 +42,16 @@ func configureAPI(api *operations.BookstoreBooksAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	api.BooksGetBooksHandler = books.GetBooksHandlerFunc(func(params books.GetBooksParams) middleware.Responder {
-		return middleware.NotImplemented("operation books.GetBooks has not yet been implemented")
-	})
+	db, err := mgo.Dial("localhost")
+	if err != nil {
+		log.Fatalln("Cannot connect to mongodb: ", err)
+	}
+
+	booksRepo := mongodb.NewMongoDBRepository(db)
+	booksUcase := usecases.NewBookUsecase(booksRepo)
+	booksHandler := adapters.NewBooksHandler(booksUcase)
+
+	api.BooksGetBooksHandler = books.GetBooksHandlerFunc(booksHandler.GetAllBooks)
 
 	api.PreServerShutdown = func() {}
 
