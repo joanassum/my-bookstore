@@ -11,6 +11,8 @@ RUN go mod download
 
 COPY . .
 
+ENV MONGO_HOST "host.docker.internal"
+
 # Build the Go app
 RUN CGO_ENABLED=0 go build -o ./out/bookstore-books ./cmd/bookstore-books-server/main.go
 

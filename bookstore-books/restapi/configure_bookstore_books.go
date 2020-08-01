@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
@@ -42,7 +43,12 @@ func configureAPI(api *operations.BookstoreBooksAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	db, err := mgo.Dial("localhost")
+	mongoHost, ok := os.LookupEnv("MONGO_HOST")
+	if !ok {
+		mongoHost = "localhost"
+	}
+
+	db, err := mgo.Dial(mongoHost)
 	if err != nil {
 		log.Fatalln("Cannot connect to mongodb: ", err)
 	}
