@@ -1,7 +1,10 @@
 package mongodb
 
 import (
+	"bytes"
 	"context"
+	"errors"
+	"io"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -27,6 +30,11 @@ type book struct {
 	Author      string        `json:"author"`
 	Description string        `json:"description"`
 	Price       float64       `json:"price"`
+	Image       image         `json:"image"`
+}
+
+type image struct {
+	Data bson.Binary `json:"data"`
 }
 
 // GetAllBooks returns a list of books from the database.
@@ -43,4 +51,22 @@ func (m *mongoDBRepository) GetAllBooks(ctx context.Context) ([]*domain.Book, er
 		})
 	}
 	return books, nil
+}
+
+// GetBookImage returns the byte representation of image of the book
+func (m *mongoDBRepository) GetBookImage(ctx context.Context) (io.Reader, error) {
+	id := ctx.Value("id")
+	idStr, ok := id.(string)
+	if !ok {
+		return nil, errors.New("cannot convert ID to string")
+	}
+	if !bson.IsObjectIdHex(idStr) {
+		return nil, errors.New("invalid ID")
+	}
+	var result book
+	err := m.DB.DB(DB_NAME).C(BOOKS_COLLECTION).FindId(bson.ObjectIdHex(idStr)).One(&result)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewReader(result.Image.Data.Data), nil
 }

@@ -21,6 +21,32 @@ paths:
           description: generic error response
           schema:
               $ref: "#/definitions/error"
+  /book/{id}/image:
+    get:
+      tags:
+        - book-image
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      produces:
+        - image/png
+        - image/gif
+        - image/jpeg
+      responses:
+        200:
+          description: show image of a book
+          schema:
+            type: file
+        404:
+          description: id not found
+          schema:
+            $ref: "#/definitions/error"
+        default:
+          description: generic error response
+          schema:
+              $ref: "#/definitions/error"
   
  
 produces:

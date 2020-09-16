@@ -15,6 +15,7 @@ import (
 	"github.com/joanassum/my-bookstore/bookstore-books/adapters"
 	"github.com/joanassum/my-bookstore/bookstore-books/repository/mongodb"
 	"github.com/joanassum/my-bookstore/bookstore-books/restapi/operations"
+	"github.com/joanassum/my-bookstore/bookstore-books/restapi/operations/book_image"
 	"github.com/joanassum/my-bookstore/bookstore-books/restapi/operations/books"
 	"github.com/joanassum/my-bookstore/bookstore-books/usecases"
 )
@@ -58,6 +59,7 @@ func configureAPI(api *operations.BookstoreBooksAPI) http.Handler {
 	booksHandler := adapters.NewBooksHandler(booksUcase)
 
 	api.BooksGetBooksHandler = books.GetBooksHandlerFunc(booksHandler.GetAllBooks)
+	api.BookImageGetBookIDImageHandler = book_image.GetBookIDImageHandlerFunc(booksHandler.GetBookImage)
 
 	api.PreServerShutdown = func() {}
 
