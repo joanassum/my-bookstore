@@ -44,7 +44,7 @@ func (m *mongoDBRepository) GetAllBooks(ctx context.Context) ([]*domain.Book, er
 	var b book
 	for iter.Next(&b) {
 		books = append(books, &domain.Book{
-			ID:     string(b.ID),
+			ID:     b.ID.Hex(),
 			Title:  b.Title,
 			Author: b.Author,
 			Price:  b.Price,
